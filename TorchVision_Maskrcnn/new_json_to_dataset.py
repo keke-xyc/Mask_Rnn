@@ -14,12 +14,12 @@ import draw
 
 NAME_LABEL_MAP = {
     '_background_': 0,
-    "steel": 1,
+    "browser": 1,
 
 }
 
 LABEL_NAME_MAP = ['0: _background_',
-                  '1: steel', ]
+                  '1: browser', ]
 
 
 def main():

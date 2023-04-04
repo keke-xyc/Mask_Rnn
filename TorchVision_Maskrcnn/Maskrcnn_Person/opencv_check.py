@@ -2,7 +2,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-imgtmp = cv2.imread(r'..\test5.png')
+imgtmp = cv2.imread(r'..\test4.png')
 img = cv2.resize(imgtmp, (0, 0), fx=1, fy=4, interpolation=cv2.INTER_NEAREST)
 
 # print(img)
@@ -14,9 +14,9 @@ gray1 = cv2.GaussianBlur(gray, (5, 5), 0)  # 高斯模糊
 # 进行轮廓的检测
 canny = cv2.Canny(gray1, 10, 20)
 contours, hierarchy = cv2.findContours(canny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-print(' ———————————————— ')
+'''print(' ———————————————— ')
 print(len(contours))
-print(' ———————————————— ')
+print(' ———————————————— ')'''
 
 for i in range(0, len(contours)):
     x, y, w, h = cv2.boundingRect(contours[i])
@@ -29,13 +29,19 @@ for i in range(0, len(contours)):
         continue
     if len(contours[i]) < 30:
         continue
-    print(' ———————————————— ')
-    print(x, y, w, h)
-    print(' ———————————————— ')
+    # print(' ———————————————— ')
+    # print(x, y, w, h)
+    # print(' ————————————————')
+
     cv2.drawContours(img, contours, i, (0, 0, 255), 2)
     cv2.imshow("th1", img)
-    '''print(contours[i])'''
+    print_log = open(r"..\test4.txt", 'w')
+    data = np.squeeze(contours[i])
+    #for j in range(0, data.shape[0]):
+    #    print("[\n %d,\n %d\n],\n" % (data[j][0], data[j][1]), file=print_log)
+    print_log.close()
     cv2.waitKey()
+
     # cv2.rectangle(img, (x, y), (x+w, y+h), (0, 0, 255), 1)
 
 # cv2.drawContours(img,contours,-1,(0,255,0),1)
