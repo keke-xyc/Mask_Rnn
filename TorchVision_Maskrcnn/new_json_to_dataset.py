@@ -19,7 +19,7 @@ NAME_LABEL_MAP = {
 }
 
 LABEL_NAME_MAP = ['0: _background_',
-                  '1: steel',]
+                  '1: steel', ]
 
 
 def main():
@@ -32,9 +32,9 @@ def main():
 
     list = os.listdir(json_file)
     for i in range(0, len(list)):
-    
-        if list[i].find(".json")<0 :
-             continue;
+
+        if list[i].find(".json") < 0:
+            continue;
         path = os.path.join(json_file, list[i])
         filename = list[i][:-5]
         if os.path.isfile(path):
@@ -55,14 +55,14 @@ def main():
             # Assign the new label to lbl and lbl_names dict
             lbl = np.array(lbl_tmp, dtype=np.int8)
             lbl_names = lbl_names_tmp
-            print ('lbl_names: ',lbl_names)
+            print('lbl_names: ', lbl_names)
             # captions = ['%d: %s' % (l, name) for l, name in enumerate(lbl_names)]
             # captions = ['0: _background_', '1: cat', '2: dog']
 
             lbl_viz = draw.draw_label(lbl, img, LABEL_NAME_MAP)
             out_dir = osp.basename(list[i]).replace('.', '_')
             out_dir = osp.join(osp.dirname(list[i]), out_dir)
-            out_dir=json_file+"\\"+out_dir
+            out_dir = json_file + "\\" + out_dir
             print(out_dir)
             if not osp.exists(out_dir):
                 os.mkdir(out_dir)

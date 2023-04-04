@@ -18,25 +18,26 @@ You must modify the following flags:
 
 `--nproc_per_node=<number_of_gpus_available>`
 
-Except otherwise noted, all models have been trained on 8x V100 GPUs. 
+Except otherwise noted, all models have been trained on 8x V100 GPUs.
 
 ### Faster R-CNN
+
 ```
 python -m torch.distributed.launch --nproc_per_node=8 --use_env train.py\
     --dataset coco --model fasterrcnn_resnet50_fpn --epochs 26\
     --lr-steps 16 22 --aspect-ratio-group-factor 3
 ```
 
-
 ### Mask R-CNN
+
 ```
 python -m torch.distributed.launch --nproc_per_node=8 --use_env train.py\
     --dataset coco --model maskrcnn_resnet50_fpn --epochs 26\
     --lr-steps 16 22 --aspect-ratio-group-factor 3
 ```
 
-
 ### Keypoint R-CNN
+
 ```
 python -m torch.distributed.launch --nproc_per_node=8 --use_env train.py\
     --dataset coco_kp --model keypointrcnn_resnet50_fpn --epochs 46\
