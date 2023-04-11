@@ -11,7 +11,6 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 
 import sys
-
 sys.path.append("./detection")
 from engine import train_one_epoch, evaluate
 import utils
@@ -20,7 +19,6 @@ import cv2
 import cv2_util
 
 import random
-
 
 class PennFudanDataset(object):
     def __init__(self, root, transforms):
@@ -88,7 +86,6 @@ class PennFudanDataset(object):
     def __len__(self):
         return len(self.imgs)
 
-
 def get_model_instance_segmentation(num_classes):
     # 加载在COCO上预训练的预训练的实例分割模型
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
@@ -111,28 +108,26 @@ def get_transform(train):
         transforms.append(T.RandomHorizontalFlip(0.5))
     return T.Compose(transforms)
 
-
 def random_color():
-    b = random.randint(0, 255)
-    g = random.randint(0, 255)
-    r = random.randint(0, 255)
-
-    return (b, g, r)
+    b = random.randint(0,255)
+    g = random.randint(0,255)
+    r = random.randint(0,255)
+ 
+    return (b,g,r)
 
 
 def toTensor(img):
-    assert type(img) == np.ndarray, 'the img type is {}, but ndarry expected'.format(type(img))
+    assert type(img) == np.ndarray,'the img type is {}, but ndarry expected'.format(type(img))
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     img = torch.from_numpy(img.transpose((2, 0, 1)))
     return img.float().div(255)  # 255也可以改为256
 
-
-def PredictImg(image, model, device):
-    # img, _ = dataset_test[0]
+def PredictImg( image, model,device):
+    #img, _ = dataset_test[0] 
     img = cv2.imread(image)
     result = img.copy()
-    dst = img.copy()
-    img = toTensor(img)
+    dst=img.copy()
+    img=toTensor(img)
 
     names = {'0': 'background', '1': 'car'}
     # put the model in evaluati
@@ -144,14 +139,14 @@ def PredictImg(image, model, device):
     boxes = prediction[0]['boxes']
     labels = prediction[0]['labels']
     scores = prediction[0]['scores']
-    masks = prediction[0]['masks']
-
-    m_bOK = False;
+    masks=prediction[0]['masks']
+ 
+    m_bOK=False;
     for idx in range(boxes.shape[0]):
         if scores[idx] >= 0.8:
-            m_bOK = True;
-            color = random_color()
-            mask = masks[idx, 0].mul(255).byte().cpu().numpy()
+            m_bOK=True;
+            color=random_color()
+            mask=masks[idx, 0].mul(255).byte().cpu().numpy()
             thresh = mask
             contours, hierarchy = cv2_util.findContours(
                 thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
@@ -160,37 +155,39 @@ def PredictImg(image, model, device):
 
             x1, y1, x2, y2 = boxes[idx][0], boxes[idx][1], boxes[idx][2], boxes[idx][3]
             name = names.get(str(labels[idx].item()))
-            cv2.rectangle(result, (x1, y1), (x2, y2), color, thickness=2)
-            cv2.putText(result, text=name, org=(x1, y1 + 10), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                        fontScale=0.5, thickness=1, lineType=cv2.LINE_AA, color=color)
+            cv2.rectangle(result,(x1,y1),(x2,y2),color,thickness=2)
+            cv2.putText(result, text=name, org=(x1, y1+10), fontFace=cv2.FONT_HERSHEY_SIMPLEX, 
+                fontScale=0.5, thickness=1, lineType=cv2.LINE_AA, color=color)
 
-            dst1 = cv2.addWeighted(result, 0.7, dst, 0.3, 0)
+            dst1=cv2.addWeighted(result,0.7,dst,0.3,0)
 
+            
+ 
     if m_bOK:
-        cv2.imshow('result', dst1)
+        cv2.imshow('result',dst1)
         cv2.waitKey()
         cv2.destroyAllWindows()
-
+    
 
 def main():
     # train on the GPU or on the CPU, if a GPU is not available
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 
     # our dataset has two classes only - background and person
-    num_classes = 2  # 需要修改种类
+    num_classes = 2  #需要修改种类
     # use our dataset and defined transformations
     dataset = PennFudanDataset('PennFudanPed', get_transform(train=True))
     dataset_test = PennFudanDataset('PennFudanPed', get_transform(train=False))
 
     # split the dataset in train and test set
     indices = torch.randperm(len(dataset)).tolist()
-    dataset = torch.utils.data.Subset(dataset, indices[:450])  # 训练集张数
-    dataset_test = torch.utils.data.Subset(dataset_test, indices[450:])  # 测试集张数
+    dataset = torch.utils.data.Subset(dataset, indices[:450]) #训练集张数
+    dataset_test = torch.utils.data.Subset(dataset_test, indices[450:])#测试集张数
 
     # define training and validation data loaders
     data_loader = torch.utils.data.DataLoader(
         dataset, batch_size=3, shuffle=True, num_workers=4,
-        collate_fn=utils.collate_fn)  # batch_size
+        collate_fn=utils.collate_fn)#batch_size
 
     data_loader_test = torch.utils.data.DataLoader(
         dataset_test, batch_size=1, shuffle=False, num_workers=4,
@@ -205,17 +202,17 @@ def main():
     # construct an optimizer
     params = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.SGD(params, lr=0.01,
-                                momentum=0.9, weight_decay=0.0005)  # 学习率
+                                momentum=0.9, weight_decay=0.0005)#学习率
     # and a learning rate scheduler
     # 还是由于我内存不够我给他禁了，不过相应engine.py的地方也得修改
     # lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
     #                                                step_size=10,
     #                                                gamma=0.1)
 
-    model_without_ddp = model
+    model_without_ddp = model 
     # let's train it for 10 epochs
-    num_epochs = 10  # 训练次数
-
+    num_epochs = 10   #训练次数
+    
     for epoch in range(num_epochs):
         # train for one epoch, printing every 10 iterations
         train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq=10)
@@ -224,19 +221,20 @@ def main():
         # evaluate on the test dataset
         evaluate(model, data_loader_test, device=device)
 
-        # utils.save_on_master({
+            # utils.save_on_master({
     #         'model': model_without_ddp.state_dict(),
     #         'optimizer': optimizer.state_dict(),
     #         'lr_scheduler': lr_scheduler.state_dict()},
     #         os.path.join('./', 'model_{}.pth'.format(epoch)))
 
     utils.save_on_master({
-        'model': model_without_ddp.state_dict()},
-        os.path.join('./', 'faster_model.pth'))
+    'model': model_without_ddp.state_dict()},
+    os.path.join('./', 'faster_model.pth'))
+
 
     print("That's it!")
     # PredictImg("test/0.jpg",model,device)
 
-
+    
 if __name__ == "__main__":
     main()

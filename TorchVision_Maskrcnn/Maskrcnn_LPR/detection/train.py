@@ -146,7 +146,6 @@ def main(args):
 
 if __name__ == "__main__":
     import argparse
-
     parser = argparse.ArgumentParser(
         description=__doc__)
 
@@ -162,7 +161,7 @@ if __name__ == "__main__":
                         help='number of data loading workers (default: 4)')
     parser.add_argument('--lr', default=0.02, type=float,
                         help='initial learning rate, 0.02 is the default value for training '
-                             'on 8 gpus and 2 images_per_gpu')
+                        'on 8 gpus and 2 images_per_gpu')
     parser.add_argument('--momentum', default=0.9, type=float, metavar='M',
                         help='momentum')
     parser.add_argument('--wd', '--weight-decay', default=1e-4, type=float,

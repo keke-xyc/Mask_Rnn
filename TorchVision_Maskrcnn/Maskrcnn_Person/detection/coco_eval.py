@@ -15,7 +15,9 @@ from collections import defaultdict
 
 import utils
 
+int_classes = int
 
+string_classes = str
 class CocoEvaluator(object):
     def __init__(self, coco_gt, iou_types):
         assert isinstance(iou_types, (list, tuple))
@@ -246,7 +248,7 @@ def loadRes(self, resFile):
 
     # print('Loading and preparing results...')
     # tic = time.time()
-    if isinstance(resFile, torch._six.string_classes):
+    if isinstance(resFile, string_classes):
         anns = json.load(open(resFile))
     elif type(resFile) == np.ndarray:
         anns = self.loadNumpyAnnotations(resFile)
